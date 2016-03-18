@@ -1,3 +1,5 @@
+import * as lib from  './api.d';
+
 'use strict';
 
 {{#models}}
@@ -7,7 +9,7 @@
  * {{{description}}}
  */
 {{/description}}
-export interface {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{
+export interface {{classname}} {{#parent}}extends lib.{{{parent}}} {{/parent}}{
 {{#vars}}
 
 {{#description}}
@@ -15,7 +17,7 @@ export interface {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{
      * {{{description}}}
      */
 {{/description}}
-    {{name}}: {{#isEnum}}{{classname}}.{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{/isEnum}};
+    {{name}}: {{^isPrimitiveType}}lib.{{/isPrimitiveType}}{{#isEnum}}{{classname}}.{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{/isEnum}};
 {{/vars}}
 }
 
