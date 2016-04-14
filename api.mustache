@@ -1,6 +1,7 @@
-import {Http, Headers, RequestOptionsArgs, Response} from 'angular2/http';
+import {Http, Headers, RequestOptionsArgs, Response, URLSearchParams} from 'angular2/http';
 import {Injectable} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 import * as lib from  './api.d';
 
 /* tslint:disable:no-unused-variable member-ordering */
@@ -18,10 +19,11 @@ export class {{classname}} {
     protected basePath = '{{basePath}}';
     public defaultHeaders : Headers = new Headers();
 
-    constructor(protected http: Http, basePath?: string) {
+    constructor(protected http: Http) { // , basePath?: string
+    /*
         if (basePath) {
             this.basePath = basePath;
-        }
+        }*/
     }
 
 {{#operation}}
@@ -30,11 +32,11 @@ export class {{classname}} {
      * {{notes}}
      {{#allParams}}* @param {{paramName}} {{description}}
      {{/allParams}}*/
-    public {{nickname}} ({{#allParams}}{{paramName}}{{^required}}?{{/required}}: lib.{{{dataType}}}, {{/allParams}}extraHttpRequestParams?: any ) : Observable<lib.{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}{}{{/returnType}}> {
+    public {{nickname}} ({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}extraHttpRequestParams?: any ) : Observable<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}{}{{/returnType}}> {
         const path = this.basePath + '{{path}}'{{#pathParams}}
             .replace('{' + '{{baseName}}' + '}', String({{paramName}})){{/pathParams}};
 
-        let queryParameters: any = {};
+        let urlSearchParams = new URLSearchParams();
         let headerParams = this.defaultHeaders;
 {{#hasFormParams}}
         let formParams: any = {};
@@ -50,7 +52,7 @@ export class {{classname}} {
 {{/allParams}}
 {{#queryParams}}
         if ({{paramName}} !== undefined) {
-            queryParameters['{{baseName}}'] = {{paramName}};
+            urlSearchParams.set('{{baseName}}', {{paramName}}.toString());
         }
 
 {{/queryParams}}
@@ -69,7 +71,7 @@ export class {{classname}} {
         let requestOptions: RequestOptionsArgs = {
             method: '{{httpMethod}}',
             headers: headerParams,
-            search: queryParameters
+            search: urlSearchParams
         };
         {{#bodyParam}}
         requestOptions.body = JSON.stringify({{paramName}});
